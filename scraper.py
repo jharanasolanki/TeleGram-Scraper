@@ -5,6 +5,12 @@ import os, sys
 import configparser
 import csv
 import time
+from telethon.events.common import *
+from telethon.events.userupdate import *
+from telethon.tl.types import *
+import time
+from datetime import datetime
+import pytz
 
 re="\033[1;31m"
 gr="\033[1;32m"
@@ -73,18 +79,30 @@ for g in groups:
 print('')
 g_index = input(gr+"[+] Enter a Number : "+re)
 target_group=groups[int(g_index)]
+
+g_lastseen = input(gr+"[+] Enter Minutes for last seen : "+re)
  
 print(gr+'[+] Fetching Members...')
 time.sleep(1)
 all_participants = []
 all_participants = client.get_participants(target_group, aggressive=True)
- 
 print(gr+'[+] Saving In file...')
 time.sleep(1)
 with open("members.csv","w",encoding='UTF-8') as f:
     writer = csv.writer(f,delimiter=",",lineterminator="\n")
     writer.writerow(['username','user id', 'access hash','name','group', 'group id'])
     for user in all_participants:
+        if(user.status!=UserStatusRecently() and user.status!=UserStatusLastMonth() and user.status!=UserStatusLastWeek() and user.status!=UserStatusEmpty() and  user.status!=None):
+            try:
+                time_delta = (datetime.now(pytz.utc) -user.status.was_online)
+                total_seconds = time_delta.total_seconds()
+                minutes = total_seconds/60
+                if(minutes>int(g_lastseen)):
+                    continue
+            except:
+                pass
+        if(user.status==UserStatusLastMonth() or user.status==UserStatusLastWeek() or user.status==UserStatusEmpty() or user.status==None):
+            continue
         if user.username:
             username= user.username
         else:
