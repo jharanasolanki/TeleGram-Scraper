@@ -30,6 +30,7 @@ def requirements():
 			pip3 install cython numpy pandas
 			python3 -m pip install cython numpy pandas
 			""")
+		os.system("pip3 install pytz")
 	banner()
 	print(gr+'['+cy+'+'+gr+']'+cy+' it will take upto 10 min to install csv merge.')
 	input_csv = input(gr+'['+cy+'+'+gr+']'+cy+' do you want to enable csv merge (y/n): ').lower()
